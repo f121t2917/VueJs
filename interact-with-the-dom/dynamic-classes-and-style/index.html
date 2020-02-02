@@ -1,0 +1,77 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<meta charset="utf-8">
+	<meta http-equiv="X-UA-Compatible" content="IE=edge">
+	<title>VueJS</title>
+	<link rel="stylesheet" href="">
+	<script src="vue.js"></script>
+<style>
+.demo {
+  width: 100px;
+  height: 100px;
+  background-color: gray;
+  display: inline-block;
+  margin: 10px;
+}
+.red {
+  background-color: red;
+}
+.green {
+  background-color: green;
+}
+.blue {
+  background-color: blue;
+}
+</style>
+
+</head>
+
+<body>
+
+<div id="app">
+	<!-- 點擊後 改變 attachRed 值 -->
+	<!-- 綁定 class attachRed 如果 true 則，加入 red class -->
+  <div 
+	class="demo"
+	@click="attachRed = !attachRed"
+	:class="divClasses"
+  ></div>
+  <div class="demo" :class="{red: attachRed}"></div>
+  <!-- 如果color 沒有顏色 且 attachRed 為 true，則設為 red -->
+  <div class="demo" :class="[color, {red: attachRed}]"></div>
+  <div class="demo" :style="{backgroundColor: color}"></div>
+  <div class="demo" :style="myStyle"></div>
+  <div class="demo" :style="[myStyle, {height: width + 'px'}]"></div>
+  <hr>
+  <!-- 直接輸入改變顏色 -->
+  <input type="text" v-model="color">
+  <input type="text" v-model="width">
+</div>
+
+  <script>
+		new Vue({
+			el: '#app',
+			data: {
+				attachRed: false,
+				color: 'green',
+				width: 100
+			},
+			computed: {
+				divClasses: function() {
+					return { // 使用 computed 改變 class 的值
+						red: this.attachRed,
+						blue: !this.attachRed
+					}
+				},
+				myStyle: function() {
+					return {
+						backgroundColor: this.color,
+						width: this.width + 'px',
+					}
+				}
+			}
+		});
+</script>
+</body>
+</html>
