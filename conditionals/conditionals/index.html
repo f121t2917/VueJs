@@ -1,0 +1,37 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<meta charset="utf-8">
+	<meta http-equiv="X-UA-Compatible" content="IE=edge">
+	<title>VueJS</title>
+	<link rel="stylesheet" href="">
+	<script src="vue.js"></script>
+</head>
+<body>
+	<div id="app">
+		<!-- false 時，檢查 elements 整個不見的 -->
+		<p v-if="show">You can see me! <span>Hello!</span></p>
+		<!-- vue.js 2.1 以上 可以使用 v-else-if -->
+		<p v-else>Now can see me!</p>
+		<p>Do you also see me?</p>
+		<button @click="show = !show">Switch</button>
+		<!-- HTML 5 可以使用 template -->
+		<template v-if="show">
+			<h1>Heading</h1>
+			<p>Inside a template</p>
+		</template>
+		<!-- v-show 檢查 elements 是 style="display: none;" -->
+		<p v-show="show">Do you also see me, again?</p>
+	</div>
+	<script>
+		new Vue({
+			el: '#app',
+			data: {
+				show: true
+			},
+			methods: {
+			}
+		})
+	</script>
+</body>
+</html>
