@@ -1,0 +1,140 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<meta charset="utf-8">
+	<meta http-equiv="X-UA-Compatible" content="IE=edge">
+	<title>VueJS</title>
+	<link rel="stylesheet" href="">
+	<script src="vue.js"></script>
+</head>
+<body>
+	<div id="app1">
+		<h1 ref="heading">{{ title }}</h1>
+		<!-- ref 是一種 key -->
+		<button v-on:click="show" ref="myButton">Show Paragraph</button>
+		<p v-if="showParagraph">This is not always visible</p>
+	</div>
+
+	<div id="app2">
+		<h1 ref="heading">{{ title }}</h1>
+		<button v-on:click="onchange">change vm1 title</button>
+		<!-- Component 只能在 new Vue 裡，可重複 -->
+		<hc></hc>
+		<hc></hc>
+	</div>
+
+	<div id="app3">
+
+	</div>
+	
+	<!-- 只會產生一個 -->
+	<hello></hello>
+	<hello></hello>
+	<div class="hello"></div>
+
+	<!-- Component 在外沒效果 -->
+	<hc></hc>
+	<script>
+		// vuejs.org/api
+		var data = {
+			title: 'The VueJS Instance',
+			showParagraph: false
+		};
+
+		// 需在 new Vue 之前
+		Vue.component('hc', {
+			template: '<h1>Hello Component</h1>',
+		});
+
+		// vue model
+		var vm1 = new Vue({
+			// el: '#app1', // 使用 mount
+			data: data,
+			methods: {
+				show: function() {
+					this.showParagraph = true;
+					this.updateTitle('The VueJS Instance (Updated)');
+					// 註冊 ref => myButton 且 可以訪問
+					console.log(this.$refs);
+					this.$refs.myButton.innerText = 'Test For Ref';
+				},
+				updateTitle: function(title) {
+					// 會觸發 watch
+					this.title = title;
+				}
+			},
+			computed: {
+				lowercaseTitle: function() {
+					return this.title.toLowerCase();
+				}
+			},
+			watch: { // watch title 變化 
+				title: function(value) {
+					alert('Title changed, new value: ' + value);
+				}
+			}
+		});
+
+		// 將 #app1 mount 到 vm1
+		vm1.$mount('#app1');
+
+		// 外部控制 vm1
+		setTimeout(function() {
+			vm1.title = 'Changed by Timer';
+			vm1.show();
+		}, 1000);
+
+		// vm1 getter
+		vm1.newProp = 'New!';
+		// 可觀察 $el => 表示模板 ex: div#app1
+		// $refs 
+		// $data => object 
+		console.log(vm1);
+		console.log('---');
+		console.log(vm1.$data.title);
+		// vue 可以跟 周圍的 js 互相作用
+		console.log(vm1.$data === data); // true
+
+		// 利用 ref 更改 title
+		// setTimeout vm1.title 沒變動
+		vm1.$refs.heading.innerText = 'Something For Ref';
+
+		var vm2 = new Vue({
+			el: '#app2',
+			data: {
+				title: 'The second Instance',
+				showParagraph: false
+			},
+			methods: {
+				onchange: function() {
+					// 改變 vm1 的 title
+					vm1.title = 'Changed!';
+				}
+			}
+			});
+			
+			var vm3 = new Vue({
+				template: '<h1>Hello</h1>',
+			});
+
+			console.log(vm3.$el);
+			// vm3.$mount('#app3');
+			// 另一種方法
+			vm3.$mount();
+			console.log(vm3.$el); // mount 後才有 $el
+			document.getElementById('app3').appendChild(vm3.$el);
+
+
+			var vm4 = new Vue({
+				el: '.hello', // 可使用 <hello></hello>
+				template: '<h1>Hello VM4</h1>',
+			});
+
+			// 使用 component
+
+	</script>
+
+
+
+</body>
+</html>
