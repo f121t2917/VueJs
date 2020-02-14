@@ -9,6 +9,8 @@
         <div class="row">
             <div class="col-xs-12 col-sm-8 col-sm-offset-2 col-md-6 col-md-offset-3">
                 <transition name="flip" mode="out-in">
+                    <!-- 利用 :is="mode" 切換 components 預設為 app-question -->
+                    <!-- 範例 Question.vue 會呼叫 answered($event)，Answer.vue 會呼叫 confirmed -->
                     <component :is="mode" @answered="answered($event)" @confirmed="mode = 'app-question'"></component>
                 </transition>
             </div>
@@ -60,6 +62,7 @@
         animation: flip-out 0.5s ease-out forwards;
     }
 
+    /* 翻轉效果 */
     @keyframes flip-out {
         from {
             transform: rotateY(0deg);

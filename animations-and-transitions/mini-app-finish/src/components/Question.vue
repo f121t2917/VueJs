@@ -38,7 +38,7 @@
             };
         },
         methods: {
-            generateQuestion() {
+            generateQuestion() { // 隨機產生問題
                 const firstNumber = this.generateRandomNumber(1, 100);
                 const secondNumber = this.generateRandomNumber(1, 100);
                 const modeNumber = this.generateRandomNumber(1, 2);

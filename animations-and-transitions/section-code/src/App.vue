@@ -75,6 +75,20 @@
                 <transition name="fade" mode="out-in">
                     <component :is="selectedComponent"></component>
                 </transition>
+                <hr>
+                <button class="btn btn-primary" @click="addItem">Add Item</button>
+                <br><br>
+                <ul class="list-group">
+                    <transition-group name="slide">
+                        <li 
+                            class="list-group-item"
+                            v-for="(number, index) in numbers"
+                            :key="number"
+                            @click="removeItem(index)"
+                            style="cursor: pointer">{{ number }}
+                        </li>
+                    </transition-group>
+                </ul>
             </div>
         </div>
     </div>
@@ -91,6 +105,7 @@
                 alertAnimation: 'fade',
                 elementWidth: 100,
                 selectedComponent: 'app-success-alert',
+                numbers:[1, 2, 3, 4, 5]
             }
         },
         methods: {
@@ -145,7 +160,14 @@
             leaveCancelled(el) {
                 console.log('leaveCancelled');
             },
-
+            addItem() {
+                // 隨機插入
+                const pos = Math.floor(Math.random() * this.numbers.length);
+                this.numbers.splice(pos, 0, this.numbers.length + 1);
+            },
+            removeItem(index) {
+                this.numbers.splice(index, 1);
+            }
         },
         components: {
             appDangerAlert: DangerAlert,
@@ -204,6 +226,11 @@
         animation: slide-out 1s ease-out forwards;
         transition: opacity 3s;
         opacity: 0;
+        position: absolute;
+    }
+
+    .slide-move {
+        transition: transform 1s;
     }
     
     /* 利用 keyframes 設置 幻燈片動畫 */
