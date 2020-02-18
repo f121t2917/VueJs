@@ -29,6 +29,12 @@ export default new Vuex.Store({
     }
   },
   actions: { // firebase 的 auth 是註冊使用者用及驗證取得 token， 正確會將資料存到 firebase database
+    setLogoutTimer ({ commit, dispatch }, expirationTime) { // 自動登出
+      setTimeout(() => {
+        // commit('clearAuthData');
+        dispatch('logout');
+      },expirationTime * 1000);
+    },
     signup ({ commit, dispatch }, authData) { // 註冊 firebase 的 auth，另外載入 dispatch
       axios.post('/accounts:signUp?key=AIzaSyAbJS2uUYG-fJ55bWIGOJC58l5UDVSEZ10', {
           email: authData.email,
@@ -41,11 +47,19 @@ export default new Vuex.Store({
               token: res.data.idToken,
               userId: res.data.localId
             });
+            // token 有效時間
+            const now = new Date();
+            const expirationDate = new Date(now.getTime() + res.data.expiresIn * 1000);
+            // 儲存登入資訊
+            localStorage.setItem('token', res.data.idToken);
+            localStorage.setItem('userId', res.data.localId);
+            localStorage.setItem('expirationDate', expirationDate);
             dispatch('storeUser', authData); // 呼叫 下方的 storeUser
+            dispatch('setLogoutTimer', res.data.expiresIn); // 設定自動登出時間
           })
           .catch(error => console.log(error))
     },
-    login ({ commit }, authData) {  // 登入
+    login ({ commit, dispatch }, authData) {  // 登入
       axios.post('/accounts:signInWithPassword?key=AIzaSyAbJS2uUYG-fJ55bWIGOJC58l5UDVSEZ10', {
           email: authData.email,
           password: authData.password,
@@ -53,15 +67,45 @@ export default new Vuex.Store({
         })
           .then(res => { 
             console.log(res)
+            // token 有效時間
+            const now = new Date();
+            const expirationDate = new Date(now.getTime() + res.data.expiresIn * 1000);
+            // 儲存登入資訊
+            localStorage.setItem('token', res.data.idToken);
+            localStorage.setItem('userId', res.data.localId);
+            localStorage.setItem('expirationDate', expirationDate);
             commit('authUser', {
               token: res.data.idToken,
               userId: res.data.localId
             });
+            dispatch('setLogoutTimer', res.data.expiresIn); // 設定自動登出時間
           })
           .catch(error => console.log(error))
     },
+    tryAutoLogin ({ commit }) { // 判斷 token 是否過期，無過期則為登入狀態
+      const token = localStorage.getItem('token');
+      if (!token) {
+        return;
+      }
+      const expirationDate = localStorage.getItem('expirationDate');
+      const now = new Date();
+      if (now >= expirationDate) { // 過期
+        return
+      }
+      // 登入
+      const userId = localStorage.getItem('userId');
+      commit('authUser', {
+        token: token,
+        userId: userId
+      });
+
+    },
     logout ({ commit }) {
       commit('clearAuthData');
+      // 清空資料
+      localStorage.removeItem('expirationDate');
+      localStorage.removeItem('token');
+      localStorage.removeItem('userId');
       router.replace('/signin'); // 登出轉向登入頁面
     },
     storeUser ({ commit, state }, userData) { // 將資料存到 firebase 的 database
